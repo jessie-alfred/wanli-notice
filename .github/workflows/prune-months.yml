@@ -1,11 +1,14 @@
 # 檔案位置：.github/workflows/prune-months.yml
 #
-# 這個流程會做兩件事：
-#   1. 每天自動檢查一次，把已過期的月份區塊從 index.html 刪除（規則見 prune_months.py）
-#   2. 把最新的 index.html 發佈到 GitHub Pages
-# 你上傳新的 index.html 時，也會自動跑一次（同樣會先刪除已過期的月份再發佈）。
+# 這個流程只負責一件事：把已過期的月份區塊從 index.html 刪除並存回儲存庫（規則見 prune_months.py）。
+# 網站的發佈由 Netlify 負責：儲存庫一有更新，Netlify 就會自動重新發佈。
+#
+# 什麼時候會執行：
+#   - 每天台灣時間 00:10 自動執行一次
+#   - 有人上傳或修改檔案（push 到 main）時
+#   - 到 Actions 頁面手動執行
 
-name: 刪除過期月份並發佈
+name: 刪除過期月份
 
 on:
   push:
@@ -13,24 +16,18 @@ on:
   schedule:
     # GitHub 的排程使用 UTC 時間：16:10 UTC = 台灣時間每天 00:10
     - cron: "10 16 * * *"
-  workflow_dispatch: # 也可以到 Actions 頁面手動執行
+  workflow_dispatch:
 
 permissions:
   contents: write # 需要把「刪除後的 index.html」存回儲存庫
-  pages: write
-  id-token: write
 
-# 避免兩次執行同時發佈
 concurrency:
-  group: pages
+  group: prune
   cancel-in-progress: false
 
 jobs:
-  deploy:
+  prune:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: 取得檔案
         uses: actions/checkout@v5
@@ -47,18 +44,3 @@ jobs:
             git commit -m "自動刪除已過期的月份公告"
             git push
           fi
-
-      - name: 準備要發佈的檔案
-        run: |
-          mkdir _site
-          cp index.html _site/
-
-      - uses: actions/configure-pages@v6
-
-      - uses: actions/upload-pages-artifact@v5
-        with:
-          path: _site
-
-      - name: 發佈到 GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v5
