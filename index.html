@@ -275,19 +275,21 @@
   }
 
   details.schedule {
-    margin: 32px 0 8px;
-    border-top: 1px solid var(--line);
-    padding-top: 24px;
+    margin: 20px 0 0;
   }
 
   details.schedule summary {
     cursor: pointer;
-    font-family: var(--font-serif);
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--accent);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--ink-700);
     letter-spacing: 0.02em;
     list-style: none;
+  }
+
+  details.schedule summary:hover {
+    color: var(--ink-900);
   }
 
   details.schedule summary::-webkit-details-marker {
@@ -406,7 +408,7 @@
     .notice-body p { font-size: 26px; }
     ul.itinerary li { font-size: 25px; }
     .notice-body p.fee { font-size: 23.5px; }
-    details.schedule summary { font-size: 26px; }
+    details.schedule summary { font-size: 20px; }
     footer { font-size: 23px; }
     .recurring { font-size: 26px; }
     .pinned-banner { font-size: 26px; padding: 16px 24px; }
